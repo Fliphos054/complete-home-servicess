@@ -14,47 +14,28 @@ if (!$service) {
     header("Location: index.php");
     exit();
 }
-?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= $service['name'] ?> | Complete Home Services</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body>
-    <!-- Navigation (same as index.php) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <!-- ... same nav as index.php ... -->
-    </nav>
 
-    <!-- Service Header -->
-    <section class="service-header py-5" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/images/services/<?= strtolower(str_replace(' ', '-', $service['name'])) ?>.jpg'); background-size: cover;">
-        <div class="container py-5">
-            <div class="row">
-                <div class="col-lg-8 mx-auto text-center text-white">
-                    <h1 class="display-4 fw-bold"><?= $service['name'] ?></h1>
-                    <p class="lead"><?= $service['description'] ?></p>
-                </div>
-            </div>
-        </div>
-    </section>
+$pageTitle = htmlspecialchars($service['name']) . " | Complete Home Services";
+$headerClass = "service-header py-5";
+$headerStyle = "background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/images/services/" . 
+               htmlspecialchars(strtolower(str_replace(' ', '-', $service['name']))) . ".jpg'); background-size: cover;";
+$customScripts = $service['name'] === 'Marble Installation' ? true : false;
+
+include 'header.php';
+?>
 
     <!-- Service Details -->
     <section class="py-5">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8">
-                    <h2 class="mb-4">About Our <?= $service['name'] ?> Service</h2>
+                    <h2 class="mb-4">About Our <?= htmlspecialchars($service['name']) ?> Service</h2>
                     <div class="service-content">
                         <?php if ($service['name'] === 'Marble Installation'): ?>
                             <div class="mb-4">
                                 <h4>Featured Marble Styles</h4>
                                 <div id="tiktokMarbleGallery" class="row g-3">
-                                    <!-- This would be populated via JavaScript with TikTok API -->
+                                    <!-- Populated via JavaScript -->
                                 </div>
                                 <div class="alert alert-info mt-3">
                                     <i class="fas fa-info-circle me-2"></i> Check out our TikTok for the latest marble trends!
@@ -111,7 +92,7 @@ if (!$service) {
                         <div class="card-body">
                             <h4 class="card-title">Get a Free Quote</h4>
                             <form action="submit_quote.php" method="POST">
-                                <input type="hidden" name="service_id" value="<?= $service['id'] ?>">
+                                <input type="hidden" name="service_id" value="<?= htmlspecialchars($service['id']) ?>">
                                 <div class="mb-3">
                                     <input type="text" class="form-control" name="name" placeholder="Your Name" required>
                                 </div>
@@ -140,8 +121,8 @@ if (!$service) {
                                             <i class="fas fa-star text-warning"></i>
                                         <?php endfor; ?>
                                     </div>
-                                    <p class="mb-2">"<?= $testimonial['content'] ?>"</p>
-                                    <p class="text-muted mb-0">- <?= $testimonial['client_name'] ?></p>
+                                    <p class="mb-2">"<?= htmlspecialchars($testimonial['content']) ?>"</p>
+                                    <p class="text-muted mb-0">- <?= htmlspecialchars($testimonial['client_name']) ?></p>
                                 </div>
                                 <hr>
                             <?php endforeach; ?>
@@ -168,10 +149,10 @@ if (!$service) {
                     <div class="col-md-4">
                         <div class="card h-100">
                             <div class="card-body text-center">
-                                <i class="<?= $related['icon'] ?> fa-3x mb-3 text-primary"></i>
-                                <h5 class="card-title"><?= $related['name'] ?></h5>
-                                <p class="card-text"><?= substr($related['description'], 0, 80) ?>...</p>
-                                <a href="service.php?id=<?= $related['id'] ?>" class="btn btn-outline-primary">Learn More</a>
+                                <i class="<?= htmlspecialchars($related['icon']) ?> fa-3x mb-3 text-primary"></i>
+                                <h5 class="card-title"><?= htmlspecialchars($related['name']) ?></h5>
+                                <p class="card-text"><?= htmlspecialchars(substr($related['description'], 0, 80)) ?>...</p>
+                                <a href="service.php?id=<?= htmlspecialchars($related['id']) ?>" class="btn btn-outline-primary">Learn More</a>
                             </div>
                         </div>
                     </div>
@@ -182,27 +163,22 @@ if (!$service) {
         </div>
     </section>
 
-    <!-- Footer (same as index.php) -->
-    <footer class="bg-dark text-white py-4">
-        <!-- ... same footer as index.php ... -->
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <?php if ($service['name'] === 'Marble Installation'): ?>
+<?php
+// Additional scripts for Marble Installation
+if ($customScripts) {
+    $additionalScripts = '
     <script>
-        // TikTok integration for marble styles
-        document.addEventListener('DOMContentLoaded', function() {
-            // This would be replaced with actual TikTok API calls
-            const marbleGallery = document.getElementById('tiktokMarbleGallery');
+        document.addEventListener("DOMContentLoaded", function() {
+            const marbleGallery = document.getElementById("tiktokMarbleGallery");
             const marbleStyles = [
-                { name: 'Carrara White', image: 'marble1.jpg', tiktok: '#' },
-                { name: 'Calacatta Gold', image: 'marble2.jpg', tiktok: '#' },
-                { name: 'Statuario', image: 'marble3.jpg', tiktok: '#' }
+                { name: "Carrara White", image: "marble1.jpg", tiktok: "#" },
+                { name: "Calacatta Gold", image: "marble2.jpg", tiktok: "#" },
+                { name: "Statuario", image: "marble3.jpg", tiktok: "#" }
             ];
             
             marbleStyles.forEach(marble => {
-                const col = document.createElement('div');
-                col.className = 'col-md-4';
+                const col = document.createElement("div");
+                col.className = "col-md-4";
                 col.innerHTML = `
                     <div class="card">
                         <img src="assets/images/marble/${marble.image}" class="card-img-top" alt="${marble.name}">
@@ -217,7 +193,7 @@ if (!$service) {
                 marbleGallery.appendChild(col);
             });
         });
-    </script>
-    <?php endif; ?>
-</body>
-</html>
+    </script>';
+}
+
+include 'footer.php';

@@ -1,26 +1,15 @@
 <?php
 require_once 'functions.php';
 $services = getServices();
+$pageTitle = "Our Work Gallery | Complete Home Services";
+$headerClass = "page-header py-5";
+$headerStyle = "background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/images/gallery-bg.jpg'); background-size: cover;";
+$lightboxCSS = true; // Flag to include lightbox CSS in header
+include 'header.php';
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Our Work Gallery | PowerClean Tech Solutions</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <link rel="stylesheet" href="assets/css/lightbox.min.css">
-</head>
-<body>
-    <!-- Navigation (same as about.php) -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <!-- ... same nav as about.php ... -->
-    </nav>
 
     <!-- Gallery Header -->
-    <section class="page-header py-5" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('assets/images/gallery-bg.jpg'); background-size: cover;">
+    <section class="<?= htmlspecialchars($headerClass) ?>" style="<?= htmlspecialchars($headerStyle) ?>">
         <div class="container py-5">
             <div class="row">
                 <div class="col-lg-8 mx-auto text-center text-white">
@@ -37,10 +26,14 @@ $services = getServices();
             <div class="row">
                 <div class="col-12">
                     <div class="text-center">
-                        <div class="btn-group" role="group">
+                        <div class="btn-group flex-wrap" role="group">
                             <button type="button" class="btn btn-outline-primary filter-button active" data-filter="all">All Projects</button>
-                            <?php foreach ($services as $service): ?>
-                                <button type="button" class="btn btn-outline-primary filter-button" data-filter="<?= strtolower(str_replace(' ', '-', $service['name'])) ?>"><?= $service['name'] ?></button>
+                            <?php foreach ($services as $service): 
+                                $filterClass = strtolower(preg_replace('/[^a-z0-9]+/', '-', $service['name']));
+                            ?>
+                                <button type="button" class="btn btn-outline-primary filter-button" data-filter="<?= htmlspecialchars($filterClass) ?>">
+                                    <?= htmlspecialchars($service['name']) ?>
+                                </button>
                             <?php endforeach; ?>
                         </div>
                     </div>
@@ -53,141 +46,50 @@ $services = getServices();
     <section class="py-5">
         <div class="container">
             <div class="row gallery-grid">
-                <!-- Parging Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter parging">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/parging-1.jpg" data-lightbox="gallery" data-title="Parging Restoration - Before & After">
-                            <img src="assets/images/gallery/parging-1-thumb.jpg" class="card-img-top" alt="Parging Restoration">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Parging Restoration</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
+                <?php
+                // Sample gallery items - in a real app you would pull these from a database
+                $galleryItems = [
+                    [
+                        'service' => 'parging',
+                        'images' => [
+                            ['full' => 'parging-1.jpg', 'thumb' => 'parging-1-thumb.jpg', 'title' => 'Parging Restoration', 'desc' => 'Parging Restoration - Before & After']
+                        ]
+                    ],
+                    [
+                        'service' => 'roof-cleaning',
+                        'images' => [
+                            ['full' => 'roof-1.jpg', 'thumb' => 'roof-1-thumb.jpg', 'title' => 'Roof Cleaning', 'desc' => 'Roof Cleaning - Residential Property'],
+                            ['full' => 'roof-before.jpg', 'thumb' => 'roof-before-thumb.jpg', 'title' => 'Before: Roof Cleaning', 'desc' => 'Roof Before Cleaning'],
+                            ['full' => 'roof-after.jpg', 'thumb' => 'roof-after-thumb.jpg', 'title' => 'After: Roof Cleaning', 'desc' => 'Roof After Cleaning', 'hidden' => true]
+                        ]
+                    ],
+                    // Add other services similarly...
+                ];
                 
-                <!-- Roof Cleaning Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter roof-cleaning">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/roof-1.jpg" data-lightbox="gallery" data-title="Roof Cleaning - Residential Property">
-                            <img src="assets/images/gallery/roof-1-thumb.jpg" class="card-img-top" alt="Roof Cleaning">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Roof Cleaning</h5>
-                                </div>
+                foreach ($galleryItems as $item): 
+                    $filterClass = strtolower(preg_replace('/[^a-z0-9]+/', '-', $item['service']));
+                ?>
+                    <?php foreach ($item['images'] as $image): ?>
+                        <div class="col-lg-4 col-md-6 mb-4 filter <?= htmlspecialchars($filterClass) ?>">
+                            <div class="card gallery-card h-100">
+                                <a href="assets/images/gallery/<?= htmlspecialchars($image['full']) ?>" 
+                                   data-lightbox="gallery-<?= htmlspecialchars($filterClass) ?>" 
+                                   data-title="<?= htmlspecialchars($image['desc']) ?>"
+                                   <?= isset($image['hidden']) ? 'style="display:none;"' : '' ?>>
+                                    <img src="assets/images/gallery/<?= htmlspecialchars($image['thumb']) ?>" 
+                                         class="card-img-top" 
+                                         alt="<?= htmlspecialchars($image['title']) ?>">
+                                    <div class="gallery-overlay">
+                                        <div class="gallery-text">
+                                            <i class="fas fa-search-plus fa-3x"></i>
+                                            <h5><?= htmlspecialchars($image['title']) ?></h5>
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Power Washing Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter powerwashing">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/powerwash-1.jpg" data-lightbox="gallery" data-title="Driveway Power Washing">
-                            <img src="assets/images/gallery/powerwash-1-thumb.jpg" class="card-img-top" alt="Power Washing">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Driveway Cleaning</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Apartment Cleaning Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter aptplaza-cleansing">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/apt-1.jpg" data-lightbox="gallery" data-title="Apartment Complex Cleaning">
-                            <img src="assets/images/gallery/apt-1-thumb.jpg" class="card-img-top" alt="Apartment Cleaning">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Apartment Complex</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Snow Removal Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter snow-removal">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/snow-1.jpg" data-lightbox="gallery" data-title="Commercial Snow Removal">
-                            <img src="assets/images/gallery/snow-1-thumb.jpg" class="card-img-top" alt="Snow Removal">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Snow Removal</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Marble Installation Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter marble-installation">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/marble-1.jpg" data-lightbox="gallery" data-title="Luxury Marble Installation">
-                            <img src="assets/images/gallery/marble-1-thumb.jpg" class="card-img-top" alt="Marble Installation">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Marble Installation</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Smart Home Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter smart-home-solutions">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/smart-1.jpg" data-lightbox="gallery" data-title="Smart Home Control Panel">
-                            <img src="assets/images/gallery/smart-1-thumb.jpg" class="card-img-top" alt="Smart Home">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Smart Home Setup</h5>
-                                </div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-                
-                <!-- Before/After Examples -->
-                <div class="col-lg-4 col-md-6 mb-4 filter parging">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/parging-before.jpg" data-lightbox="before-after-1" data-title="Parging Before">
-                            <img src="assets/images/gallery/parging-before-thumb.jpg" class="card-img-top" alt="Parging Before">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Before: Parging Repair</h5>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="assets/images/gallery/parging-after.jpg" data-lightbox="before-after-1" data-title="Parging After" style="display:none;"></a>
-                    </div>
-                </div>
-                
-                <div class="col-lg-4 col-md-6 mb-4 filter roof-cleaning">
-                    <div class="card gallery-card h-100">
-                        <a href="assets/images/gallery/roof-before.jpg" data-lightbox="before-after-2" data-title="Roof Before Cleaning">
-                            <img src="assets/images/gallery/roof-before-thumb.jpg" class="card-img-top" alt="Roof Before">
-                            <div class="gallery-overlay">
-                                <div class="gallery-text">
-                                    <i class="fas fa-search-plus fa-3x"></i>
-                                    <h5>Before: Roof Cleaning</h5>
-                                </div>
-                            </div>
-                        </a>
-                        <a href="assets/images/gallery/roof-after.jpg" data-lightbox="before-after-2" data-title="Roof After Cleaning" style="display:none;"></a>
-                    </div>
-                </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -202,40 +104,39 @@ $services = getServices();
         </div>
     </section>
 
-    <!-- Footer (same as about.php) -->
-    <footer class="bg-dark text-white py-4">
-        <!-- ... same footer as about.php ... -->
-    </footer>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="assets/js/lightbox-plus-jquery.min.js"></script>
-    <script src="assets/js/main.js"></script>
+<?php
+// Additional scripts specific to this page
+$additionalScripts = '
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="assets/js/lightbox.min.js"></script>
     <script>
-        // Gallery filtering
         $(document).ready(function(){
-            $(".filter-button").click(function(){
-                const value = $(this).attr('data-filter');
-                
+            // Gallery filtering
+            $(".filter-button").on("click", function(){
+                var filterValue = $(this).data("filter");
                 $(".filter-button").removeClass("active");
                 $(this).addClass("active");
                 
-                if(value == "all") {
-                    $(".filter").show();
+                if(filterValue === "all") {
+                    $(".filter").fadeIn(300);
                 } else {
-                    $(".filter").not('.'+value).hide();
-                    $(".filter").filter('.'+value).show();
+                    $(".filter").hide();
+                    $(".filter." + filterValue).fadeIn(300);
                 }
             });
             
             // Initialize lightbox
-            lightbox.option({
-                'resizeDuration': 200,
-                'wrapAround': true,
-                'showImageNumberLabel': true,
-                'positionFromTop': 100
-            });
+            if(typeof lightbox !== "undefined") {
+                lightbox.option({
+                    "resizeDuration": 200,
+                    "wrapAround": true,
+                    "showImageNumberLabel": true,
+                    "positionFromTop": 100,
+                    "alwaysShowNavOnTouchDevices": true
+                });
+            }
         });
-    </script>
-</body>
-</html>
+    </script>';
+
+include 'footer.php';
+?>
